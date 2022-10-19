@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>게시판 이름</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a href="/board/dev">개발게시판</a></td>
+            </tr>
+            <tr>
+                <td><a href="/board/free">자유게시판</a></td>
+            </tr>
+            <tr>
+                <td><a href="/board/game">게임게시판</a></td>
+            </tr>
+            <tr>
+                <td><a href="/board/hobby">취미게시판</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"/>
+
+</div> <!-- /container -->
+
+</body>
+</html>
