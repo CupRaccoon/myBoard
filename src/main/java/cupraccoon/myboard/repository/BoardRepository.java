@@ -6,10 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
 public class BoardRepository {
+    @PersistenceContext
     private final EntityManager em;
 
     public Long save(Board board){
@@ -24,6 +27,10 @@ public class BoardRepository {
     public Board findOne(Long id){
         return em.find(Board.class, id);
 
+    }
+    public List<Board> findAll(){
+
+        return em.createQuery("select i from Board i", Board.class).getResultList();
     }
 
 }

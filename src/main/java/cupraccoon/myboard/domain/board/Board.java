@@ -1,6 +1,7 @@
 package cupraccoon.myboard.domain.board;
 
 import com.sun.istack.NotNull;
+import cupraccoon.myboard.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,26 +24,30 @@ public class Board {
         private String title;
         private String content;
 
-        private int like;
+        private int recommend;
 
         private LocalDateTime writeDate;
 
-        //UserId
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "user_id")
+        private User writeUser;
+
         //commentList
+
         public Board(){
 
         }
         public Board(String title, String content){
                 this.title = title;
                 this.content = content;
-                this.like = 0;
+                this.recommend = 0;
                 this.writeDate = LocalDateTime.now();
         }
-        public void addLike(){
-                this.like += 1;
+        public void addrecommend(){
+                this.recommend += 1;
         }
-        public void disLike(){
-                this.like += 1;
+        public void disrecommend(){
+                this.recommend += 1;
         }
 }
 
