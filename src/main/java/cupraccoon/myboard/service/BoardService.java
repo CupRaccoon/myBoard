@@ -9,13 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
 
+    public void saveBoard(Board board){
+        boardRepository.save(board);
+    }
+
     public List<Board> findBoards() {
         return boardRepository.findAll();
-
     }
 }

@@ -21,13 +21,15 @@
             <tbody>
             <tr th:each="board : ${boards}">
                 <td th:text="${board.id}"></td>
-                <td th:text="${board.title}"></td>
-                <td th:text="${board.writeUser.name}"></td>
+                <td><a th:href="@{/board/{path}(path=${boardType})}" th:text="${board.title}"></a></td>
+                <td th:text="${board.unsingedUser}"></td>
                 <td th:text="${board.writeDate}"></td>
                 <td th:text="${board.recommend}"></td>
             </tr>
             </tbody> </table>
     </div>
+    <a class="btn btn-primary" th:href="@{/board/{path}/new(path=${boardType})}">글쓰기</a>
+
     <div th:replace="fragments/footer :: footer" />
 </div> <!-- /container -->
 </body>

@@ -3,7 +3,9 @@ package cupraccoon.myboard.domain.board;
 import com.sun.istack.NotNull;
 import cupraccoon.myboard.domain.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype")
 public class Board {
@@ -32,17 +35,26 @@ public class Board {
         @JoinColumn(name = "user_id")
         private User writeUser;
 
+        @ColumnDefault("false")
+        private boolean isSignedUser;
+
+        private String unsingedUser;
+
+        private String unsigedPassword;
+
         //commentList
-
-        public Board(){
-
+        public static Board createUnsigned(String title, String content, String user, String password){
+                Board board = new Board();
+                board.title = title;
+                board.content = content;
+                board.recommend = 0;
+                board.writeDate = LocalDateTime.now();
+                board.isSignedUser = false;
+                board.unsingedUser = user;
+                board.unsigedPassword = password;
+                return board;
         }
-        public Board(String title, String content){
-                this.title = title;
-                this.content = content;
-                this.recommend = 0;
-                this.writeDate = LocalDateTime.now();
-        }
+
         public void addrecommend(){
                 this.recommend += 1;
         }

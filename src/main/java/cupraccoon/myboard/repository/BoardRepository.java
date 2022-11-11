@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class BoardRepository {
-    @PersistenceContext
+
     private final EntityManager em;
 
     public Long save(Board board){
