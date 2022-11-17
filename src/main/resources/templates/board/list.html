@@ -22,7 +22,7 @@
             <tr th:each="board : ${boards}">
                 <td th:text="${board.id}"></td>
                 <td><a th:href="@{/board/{path}(path=${boardType})}" th:text="${board.title}"></a></td>
-                <td th:text="${board.unsingedUser}"></td>
+                <td th:text="${board.unsignedUser}"></td>
                 <td th:text="${board.writeDate}"></td>
                 <td th:text="${board.recommend}"></td>
             </tr>

@@ -18,6 +18,10 @@ public class BoardService {
         boardRepository.save(board);
     }
 
+    public Board findOne(Long boardId) {
+        return boardRepository.findOne(boardId);
+    }
+
     public List<Board> findBoards() {
         return boardRepository.findAll();
     }

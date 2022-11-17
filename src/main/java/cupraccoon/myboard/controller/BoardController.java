@@ -37,6 +37,15 @@ public class BoardController {
         Board board =  Board.createUnsigned(boardDto.getTitle(),
                 boardDto.getContent(), boardDto.getNickName(), boardDto.getPassword());
         boardService.saveBoard(board);
-        return "/board/list";
+        Long savedId = board.getId();
+        return "redirect:/board/"+boardType+"/"+savedId;
     }
+
+    @GetMapping("/{boardType}/{boardId}")
+    public String boardCotent(@PathVariable String boardType, @PathVariable Long boardId,Model model){
+        Board findBoard = boardService.findOne(boardId);
+        model.addAttribute(findBoard);
+        return "/board/content";
+    }
+
 }

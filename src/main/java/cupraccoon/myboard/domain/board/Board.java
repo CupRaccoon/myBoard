@@ -38,9 +38,9 @@ public class Board {
         @ColumnDefault("false")
         private boolean isSignedUser;
 
-        private String unsingedUser;
+        private String unsignedUser;
 
-        private String unsigedPassword;
+        private String unsignedPassword;
 
         //commentList
         public static Board createUnsigned(String title, String content, String user, String password){
@@ -50,8 +50,8 @@ public class Board {
                 board.recommend = 0;
                 board.writeDate = LocalDateTime.now();
                 board.isSignedUser = false;
-                board.unsingedUser = user;
-                board.unsigedPassword = password;
+                board.unsignedUser = user;
+                board.unsignedPassword = password;
                 return board;
         }
 
