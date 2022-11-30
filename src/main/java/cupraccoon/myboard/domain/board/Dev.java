@@ -7,11 +7,11 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@Getter @Setter
 @DiscriminatorValue("D")
+@Getter @Setter
 public class Dev extends Board {
     public Dev(){
-
     }
+
 
 }

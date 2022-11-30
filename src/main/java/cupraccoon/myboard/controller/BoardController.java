@@ -1,9 +1,11 @@
 package cupraccoon.myboard.controller;
 
 import cupraccoon.myboard.domain.board.Board;
+import cupraccoon.myboard.domain.board.Category;
 import cupraccoon.myboard.domain.board.Dev;
 import cupraccoon.myboard.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Cache;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +20,17 @@ import java.util.List;
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
+    @GetMapping()
+    public String list(Model model){
+        List<Board> boards = boardService.findAllPosts();
+        model.addAttribute("boards",boards);
+        return "/board/list";
+    }
+
     @GetMapping("/{boardType}")
     public String list(@PathVariable String boardType, Model model){
-        List<Board> boards = boardService.findBoards();
+        String category = Category.findCategoryByUrl(boardType);
+        List<Board> boards = boardService.findPostsByCategory(category);
         model.addAttribute("boards",boards);
         model.addAttribute("boardtype",boardType);
         return "/board/list";
@@ -32,7 +42,7 @@ public class BoardController {
         return "/board/write";
     }
     @PostMapping("/{boardType}/new")
-    public String newBoard(@PathVariable String boardType, BoardDto boardDto,Model model){
+    public String newBoard(@PathVariable String boardType, BoardDto boardDto,Model model) throws Exception {
         model.addAttribute("boardType",boardType);
         Board board =  Board.createUnsigned(boardDto.getTitle(),
                 boardDto.getContent(), boardDto.getNickName(), boardDto.getPassword());

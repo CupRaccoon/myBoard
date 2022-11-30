@@ -28,8 +28,12 @@ public class BoardRepository {
         return em.find(Board.class, id);
 
     }
-    public List<Board> findAll(){
 
+    public List<Board> findByCategory(String category) {
+        return em.createQuery("select i from " +category +" i", Board.class).
+                getResultList();
+    }
+    public List<Board> findAll(){
         return em.createQuery("select i from Board i", Board.class).getResultList();
     }
 

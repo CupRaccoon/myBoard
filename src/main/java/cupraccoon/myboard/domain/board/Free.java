@@ -7,7 +7,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@Getter @Setter
 @DiscriminatorValue("F")
+@Getter @Setter
 public class Free extends Board {
 }

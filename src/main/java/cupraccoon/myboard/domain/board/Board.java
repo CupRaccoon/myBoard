@@ -43,6 +43,7 @@ public class Board {
         private String unsignedPassword;
 
         //commentList
+
         public static Board createUnsigned(String title, String content, String user, String password){
                 Board board = new Board();
                 board.title = title;

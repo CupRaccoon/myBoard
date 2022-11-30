@@ -22,7 +22,10 @@ public class BoardService {
         return boardRepository.findOne(boardId);
     }
 
-    public List<Board> findBoards() {
+    public List<Board> findAllPosts() {
         return boardRepository.findAll();
+    }
+    public List<Board> findPostsByCategory(String board){
+        return boardRepository.findByCategory(board);
     }
 }
