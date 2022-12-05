@@ -1,36 +1,39 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header" />
+<head th:replace="fragments/header :: header"/>
 <body>
+
 <div class="container">
-    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
     <div>
-        <a th:href="@{/board/{path}(path=${boardType})}"><h4 th:text="${boardType}"></h4></a>
-
-
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>제목</th>
-                <th>글쓴이</th>
-                <th>작성일</th>
-                <th>추천</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="board : ${boards}">
-                <td th:text="${board.id}"></td>
-                <td><a th:href="@{/board/{path}(path=${boardType})}" th:text="${board.title}"></a></td>
-                <td th:text="${board.unsignedUser}"></td>
-                <td th:text="${board.writeDate}"></td>
-                <td th:text="${board.recommend}"></td>
-            </tr>
-            </tbody> </table>
+        <a th:href="@{/board/{path}(path=${boardType})}"><h3 th:text="${korName}"></h3></a>
     </div>
-    <a class="btn btn-primary" th:href="@{/board/{path}/new(path=${boardType})}">글쓰기</a>
 
-    <div th:replace="fragments/footer :: footer" />
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>제목</th>
+            <th>글쓴이</th>
+            <th>작성일</th>
+            <th>추천</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="board : ${boards}">
+            <td th:text="${board.id}"></td>
+            <td><a th:href="@{/board/{path}/{id}(path=${boardType},id=${board.id})}" th:text="${board.title}"></a></td>
+            <td th:text="${board.unsignedUser}"></td>
+            <td th:text="${board.writeDate}"></td>
+            <td th:text="${board.recommend}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <a class="btn btn-primary" th:href="@{/board/{path}/new(path=${boardType})}"
+    th:unless="${boardType eq 'best'} or ${boardType eq 'all'}">글쓰기</a>
+
+    <div th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
 </html>

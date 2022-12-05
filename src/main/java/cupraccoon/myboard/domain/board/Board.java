@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter @Setter
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "dtype")
 public class Board {
 
         @Id
@@ -23,6 +21,7 @@ public class Board {
         @Column(name = "board_id")
         private Long id;
 
+        private String dtype;
         @NotNull
         private String title;
         private String content;
@@ -44,8 +43,10 @@ public class Board {
 
         //commentList
 
-        public static Board createUnsigned(String title, String content, String user, String password){
+        public static Board createUnsigned(String dtype, String title,
+                                           String content, String user, String password){
                 Board board = new Board();
+                board.dtype = dtype;
                 board.title = title;
                 board.content = content;
                 board.recommend = 0;

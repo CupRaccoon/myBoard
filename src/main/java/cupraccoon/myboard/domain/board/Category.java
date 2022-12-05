@@ -6,37 +6,33 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum Category {
-    Dev("D","개발","dev"),
-    Free("F","자유","free"),
-    Game("G","게임","game"),
-    Hobby("H","취미","hobby");
+    dev("D","개발게시판"),
+    free("F","자유게시판"),
+    game("G","게임게시판"),
+    hobby("H","취미게시판");
 
-    private final String discriminator;
+    private final String dtype;
     private final String korName;
-    private final String urlName;
 
-    private Category(String discriminator, String korName, String urlName) {
-        this.discriminator = discriminator;
+    private Category(String dtype, String korName) {
+        this.dtype = dtype;
         this.korName = korName;
-        this.urlName = urlName;
     }
 
-    private String Discriminator() {
-        return discriminator;
+    private String dtype() {
+        return dtype;
     }
 
-    private String KorName() {
+    private String korName() {
         return korName;
     }
 
-    private String UrlName() {
-        return urlName;
-    }
-    private static final Map<String, Category> BY_URLNAME =
-            Stream.of(values()).collect(Collectors.toMap(Category::UrlName, Function.identity()));
 
     public static String findCategoryByUrl(String urlName){
-        return BY_URLNAME.get(urlName).name();
+        return Category.valueOf(urlName).dtype();
+    }
+    public static String findKorNameByUrl(String urlName){
+        return Category.valueOf(urlName).korName();
     }
 
 

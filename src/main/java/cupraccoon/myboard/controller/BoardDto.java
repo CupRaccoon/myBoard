@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardDto {
-    private String nickName;
+    private String userName;
     private String password;
     private String title;
     private String content;

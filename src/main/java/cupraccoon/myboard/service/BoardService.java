@@ -14,6 +14,7 @@ import java.util.List;
 public class BoardService {
     private final BoardRepository boardRepository;
 
+    @Transactional
     public void saveBoard(Board board){
         boardRepository.save(board);
     }
@@ -25,7 +26,14 @@ public class BoardService {
     public List<Board> findAllPosts() {
         return boardRepository.findAll();
     }
-    public List<Board> findPostsByCategory(String board){
-        return boardRepository.findByCategory(board);
+    public List<Board> findPostsByCategory(String dtype){
+        return boardRepository.findByCategory(dtype);
+    }
+    public List<Board> findPostsByRecommend(int recommend){
+        return boardRepository.findByRecommend(recommend);
+    }
+    public boolean validatePassword(Long id,String inputPassword){
+        String password = boardRepository.findPassword(id);
+        return password.equals(inputPassword);
     }
 }

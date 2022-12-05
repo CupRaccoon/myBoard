@@ -28,14 +28,25 @@ public class BoardRepository {
         return em.find(Board.class, id);
 
     }
-
-    public List<Board> findByCategory(String category) {
-        return em.createQuery("select i from " +category +" i", Board.class).
-                getResultList();
-    }
     public List<Board> findAll(){
-        return em.createQuery("select i from Board i", Board.class).getResultList();
+        return em.createQuery("select b from Board b", Board.class).getResultList();
     }
 
+    public List<Board> findByCategory(String dtype) {
+        return em.createQuery("select b from Board b where b.dtype= :dtype", Board.class)
+                .setParameter("dtype",dtype)
+                .getResultList();
+    }
+
+    public List<Board> findByRecommend(int recommendNumber) {
+        return em.createQuery("select b from Board b where b.recommend >= :recommendNumber",
+                Board.class)
+                .setParameter("recommendNumber",recommendNumber)
+                .getResultList();
+    }
+
+    public String findPassword(Long id){
+        return em.find(Board.class, id).getUnsignedPassword();
+    }
 }
 
