@@ -4,10 +4,8 @@
 
 <body>
 <div class="container">
-    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-    <div>
-        <a th:href="@{/board/{path}(path=${boardType})}"><h3 th:text="${korName}"></h3></a>
-    </div>
+    <div th:replace="fragments/bodyHeader :: bodyHeader"></div>
+    <div th:replace="~{fragments/bodyHeader :: boardHeader (${boardType},${korName})}"></div>
 
 
     <form th:action="@{/board/{path}/new(path=${boardType})}" th:object="${boardDto}" method="post">
@@ -30,9 +28,8 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <br/>
-    <div th:replace="fragments/footer :: footer" /></div>
+    <div th:replace="fragments/footer :: footer"></div>
 
-
-
+</div> <!-- /container -->
 </body>
 </html>

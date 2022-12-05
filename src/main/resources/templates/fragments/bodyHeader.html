@@ -3,3 +3,8 @@
 <div class="header" th:fragment="bodyHeader">
     <a href="/"><h1 class="text-muted">MyBoard</h1></a>
 </div>
+
+
+<div class="header" th:fragment="boardHeader (boardType,korName)">
+        <a th:href="@{/board/{path}(path=${boardType})}"><h2 th:text="${korName}"></h2></a>
+</div>

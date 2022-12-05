@@ -81,6 +81,7 @@ public class BoardController {
     public String passwordFormToUpdate(@PathVariable String boardType,
                                   @PathVariable Long boardId, Model model){
         String korName = Category.findKorNameByUrl(boardType);
+        model.addAttribute("validateType","edit");
         model.addAttribute("korName", korName);
         model.addAttribute("boardId",boardId);
         model.addAttribute("passwordForm",new PasswordForm());
@@ -105,11 +106,11 @@ public class BoardController {
             return "/board/editBoardForm";
         }
         else{
+            log.error("wrong password");
             log.error("password : ",password);
             model.addAttribute("errorMessage",password);
             return "/board/error";
         }
-
     }
     @PostMapping("/{boardType}/{boardId}/edit")
     public String updateBoardForm(@PathVariable String boardType, @PathVariable Long boardId,
@@ -125,5 +126,32 @@ public class BoardController {
         model.addAttribute("boardId",boardId);
         return "redirect:/board/" + boardType + "/" + boardId;
 
+    }
+
+    @GetMapping("/{boardType}/{boardId}/delete")
+    public String passwordFormToDelete(@PathVariable String boardType,
+                                       @PathVariable Long boardId, Model model){
+        String korName = Category.findKorNameByUrl(boardType);
+        model.addAttribute("validateType","delete");
+        model.addAttribute("korName", korName);
+        model.addAttribute("boardId",boardId);
+        model.addAttribute("passwordForm",new PasswordForm());
+        return "/board/passwordForm";
+    }
+    @PostMapping("/{boardType}/{boardId}/delete/validate")
+    public String deleteBoard(@PathVariable String boardType, @PathVariable Long boardId,
+                                  @ModelAttribute("password") PasswordForm passwordForm, Model model){
+        String password =  passwordForm.getPassword();
+        if(boardService.validatePassword(boardId,password)){
+            boardService.deleteById(boardId);
+            String korName = Category.findKorNameByUrl(boardType);
+            return "redirect:/board/" + boardType;
+        }
+        else{
+            log.error("wrong password");
+            log.error("input_password : ",password);
+            model.addAttribute("errorMessage",password);
+            return "/board/error";
+        }
     }
 }

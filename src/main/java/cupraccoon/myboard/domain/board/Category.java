@@ -9,7 +9,8 @@ public enum Category {
     dev("D","개발게시판"),
     free("F","자유게시판"),
     game("G","게임게시판"),
-    hobby("H","취미게시판");
+    hobby("H","취미게시판"),
+    all("A","종합게시판");
 
     private final String dtype;
     private final String korName;

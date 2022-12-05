@@ -44,9 +44,11 @@ public class BoardRepository {
                 .setParameter("recommendNumber",recommendNumber)
                 .getResultList();
     }
-
     public String findPassword(Long id){
         return em.find(Board.class, id).getUnsignedPassword();
+    }
+    public void delete(Board board){
+        em.remove(board);
     }
 }
 

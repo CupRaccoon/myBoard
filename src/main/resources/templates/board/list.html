@@ -1,13 +1,11 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header"/>
+<head th:replace="fragments/header :: header"></head>
 <body>
 
 <div class="container">
-    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-    <div>
-        <a th:href="@{/board/{path}(path=${boardType})}"><h3 th:text="${korName}"></h3></a>
-    </div>
+    <div th:replace="fragments/bodyHeader :: bodyHeader"></div>
+    <div th:replace="~{fragments/bodyHeader :: boardHeader (${boardType},${korName})}"></div>
 
 
     <table class="table table-striped">
@@ -33,7 +31,7 @@
     <a class="btn btn-primary" th:href="@{/board/{path}/new(path=${boardType})}"
     th:unless="${boardType eq 'best'} or ${boardType eq 'all'}">글쓰기</a>
 
-    <div th:replace="fragments/footer :: footer"/>
+    <div th:replace="fragments/footer :: footer"></div>
 </div> <!-- /container -->
 </body>
 </html>

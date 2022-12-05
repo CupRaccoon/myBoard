@@ -13,7 +13,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-
     @Transactional
     public void saveBoard(Board board){
         boardRepository.save(board);
@@ -35,5 +34,10 @@ public class BoardService {
     public boolean validatePassword(Long id,String inputPassword){
         String password = boardRepository.findPassword(id);
         return password.equals(inputPassword);
+    }
+    @Transactional
+    public void deleteById(Long boardId){
+        Board board = boardRepository.findOne(boardId);
+        boardRepository.delete(board);
     }
 }
