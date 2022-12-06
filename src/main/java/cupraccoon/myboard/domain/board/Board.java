@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
@@ -23,9 +24,10 @@ public class Board {
 
         private String dtype;
         @NotNull
+        @Length(min = 1, max = 50)
         private String title;
+        @Length(min = 1, max = 5000)
         private String content;
-
         private int recommend;
 
         private LocalDateTime writeDate;
@@ -36,9 +38,9 @@ public class Board {
 
         @ColumnDefault("false")
         private boolean isSignedUser;
-
+        @Length(min = 1, max = 50)
         private String unsignedUser;
-
+        @Length(min = 1, max = 50)
         private String unsignedPassword;
 
         //commentList
@@ -57,11 +59,8 @@ public class Board {
                 return board;
         }
 
-        public void addrecommend(){
-                this.recommend += 1;
-        }
-        public void disrecommend(){
-                this.recommend += 1;
+        public void addRecommend(int addNumber){
+                this.recommend = recommend + addNumber;
         }
 }
 

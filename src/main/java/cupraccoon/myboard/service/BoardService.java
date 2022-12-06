@@ -32,12 +32,17 @@ public class BoardService {
         return boardRepository.findByRecommend(recommend);
     }
     public boolean validatePassword(Long id,String inputPassword){
-        String password = boardRepository.findPassword(id);
+        String password = boardRepository.getPassword(id);
         return password.equals(inputPassword);
     }
     @Transactional
     public void deleteById(Long boardId){
         Board board = boardRepository.findOne(boardId);
         boardRepository.delete(board);
+    }
+    @Transactional
+    public void increaseRecommend(Long id){
+        Board board = boardRepository.findOne(id);
+        boardRepository.increaseRecommend(board);
     }
 }

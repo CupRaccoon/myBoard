@@ -20,14 +20,26 @@
             <tbody>
             <td th:text="${board.id}"></td>
             <td th:text="${board.recommend}"></td>
-            <td th:text="${board.writeDate}"></td>
+            <td th:text="${#temporals.format(board.writeDate,'yyyy-MM-dd HH:mm')}"></td>
             <td th:text="${board.unsignedUser}"></td>
             </tbody> </table>
+    </div>
+
+    <div>
         <span th:text="${board.content}"></span>
     </div>
-        <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/{boardType}/{id}/edit(id=${board.id},boardType=${boardType})}'|">수정</button>
-        <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/{boardType}/{id}/delete(id=${board.id},boardType=${boardType})}'|">삭제</button>
-    <div th:replace="fragments/footer :: footer"></div>
+    <div>
+        <button type="button" class="btn btn-primary"
+                th:onclick="|location.href='@{/board/{boardType}/{id}/recommend(id=${board.id},boardType=${boardType})}'|">
+            추천</button>
+        <button type="button" class="btn btn-primary"
+                th:onclick="|location.href='@{/board/{boardType}/{id}/edit(id=${board.id},boardType=${boardType})}'|">
+            수정</button>
+        <button type="button" class="btn btn-primary"
+                th:onclick="|location.href='@{/board/{boardType}/{id}/delete(id=${board.id},boardType=${boardType})}'|">
+            삭제</button>
+    </div>
+        <div th:replace="fragments/footer :: footer"></div>
 </div> <!-- /container -->
 </body>
 </html>

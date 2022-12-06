@@ -149,9 +149,15 @@ public class BoardController {
         }
         else{
             log.error("wrong password");
-            log.error("input_password : ",password);
+            log.error("input_password : "+password);
             model.addAttribute("errorMessage",password);
             return "/board/error";
         }
+    }
+    @GetMapping("{boardType}/{boardId}/recommend")
+    public String increaseBoardRecommend(@PathVariable String boardType, @PathVariable Long boardId,
+                                         Model model){
+        boardService.increaseRecommend(boardId);
+        return "redirect:/board/" + boardType + "/" + boardId;
     }
 }
