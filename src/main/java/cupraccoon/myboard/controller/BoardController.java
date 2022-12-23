@@ -5,6 +5,10 @@ import cupraccoon.myboard.domain.board.Category;
 import cupraccoon.myboard.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,29 +22,43 @@ import java.util.List;
 public class BoardController {
     private final BoardService boardService;
 
+
+//    @GetMapping("/test")
+//    public String pageList(Model model){
+//        return "/board/list";
+//    }
+
     @GetMapping("/all")
-    public String list(Model model) {
-        List<Board> boards = boardService.findAllPosts();
+    public String list(Model model,
+                       @PageableDefault(page = 0,size = 10,sort = "id",direction = Sort.Direction.DESC)
+                               Pageable pageable) {
+        Page<Board> boards = boardService.findAllPosts(pageable);
         model.addAttribute("boardType","all");
         model.addAttribute("boards", boards);
         model.addAttribute("korName","종합게시판");
         return "/board/list";
     }
     @GetMapping("/best")
-    public String bestList(Model model) {
+    public String bestList(Model model,
+                           @PageableDefault(page = 0,size = 10,sort = "id",direction = Sort.Direction.DESC)
+                                   Pageable pageable) {
         int recommend = 5;
-        List<Board> boards = boardService.findPostsByRecommend(5);
+        Page<Board> boards = boardService.findPostsByRecommend(5,pageable);
         model.addAttribute("boardType","best");
         model.addAttribute("boards", boards);
         model.addAttribute("korName","베스트게시판");
         return "/board/list";
     }
+
+
     @GetMapping("/{boardType}")
-    public String list(@PathVariable String boardType, Model model) {
+    public String list(@PathVariable String boardType, Model model,
+                       @PageableDefault(page = 0,size = 10,sort = "id",direction = Sort.Direction.DESC)
+                               Pageable pageable) {
         String category = Category.findCategoryByUrl(boardType);
-        List<Board> boards = boardService.findPostsByCategory(category);
+        Page<Board> boards = boardService.findPostsByCategory(category,pageable);
         model.addAttribute("boards", boards);
-        model.addAttribute("boardtype", boardType);
+        model.addAttribute("boardType", boardType);
         String korName = Category.findKorNameByUrl(boardType);
         model.addAttribute("korName", korName);
 
@@ -107,7 +125,7 @@ public class BoardController {
         }
         else{
             log.error("wrong password");
-            log.error("password : ",password);
+            log.error("password : " + password);
             model.addAttribute("errorMessage",password);
             return "/board/error";
         }

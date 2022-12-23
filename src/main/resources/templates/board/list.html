@@ -24,13 +24,63 @@
             <td><a th:href="@{/board/{path}/{id}(path=${boardType},id=${board.id})}"
                    th:text="${board.title}"></a></td>
             <td th:text="${board.unsignedUser}"></td>
-            <td th:text="${board.writeDate}"></td>
+            <td th:text="${#temporals.format(board.writeDate,'yyyy-MM-dd HH:mm')}"></td>
             <td th:text="${board.recommend}"></td>
         </tr>
         </tbody>
     </table>
+
+    <nav
+            th:with="
+                pageNumber = ${boards.pageable.pageNumber},
+                pageSize = ${boards.pageable.pageSize},
+                totalPages = ${boards.totalPages},
+                startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+                tempEndPage = ${startPage + pageSize - 1},
+                endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})"
+            aria-label="Page navigation"
+    >
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link"
+                   th:href="@{/board/{path}(path=${boardType},page=0)}" aria-label="First">
+                    <span aria-hidden="true">First</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link"
+                   th:href="${boards.first} ? '#' :@{/board/{path}(path=${boardType},page=${boards.number-1})}"
+                   aria-label="Previous">
+                    <span aria-hidden="true">&lt;</span>
+                </a>
+            </li>
+
+            <li th:each="page: ${#numbers.sequence(startPage, endPage)}"
+                class="page-item">
+                <a class="page-link"
+                   th:text="${page}" th:href="@{/board/{path}(path=${boardType},page=${page-1})}"></a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link"
+                   th:href="${boards.last} ? '#' : @{/board/{path}(path=${boardType},page=${boards.number + 1})}"
+                   aria-label="Next">
+                    <span aria-hidden="true">&gt;</span>
+                </a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link"
+                   th:href="@{/board/{path}(path=${boardType},page=${totalPages-1})}" aria-label="Last">
+                    <span aria-hidden="true">Last</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+
     <a class="btn btn-primary" th:href="@{/board/{path}/new(path=${boardType})}"
-    th:unless="${boardType eq 'best'} or ${boardType eq 'all'}">글쓰기</a>
+       th:unless="${boardType eq 'best'} or ${boardType eq 'all'}">글쓰기</a>
 
     <div th:replace="fragments/footer :: footer"></div>
 </div> <!-- /container -->

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 class BoardRepositoryTest {
 
     @Autowired
-    BoardRepository boardRepository;
+    BoardRepository_old boardRepository;
 
     @Test
     @Transactional

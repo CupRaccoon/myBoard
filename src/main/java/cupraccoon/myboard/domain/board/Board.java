@@ -37,13 +37,12 @@ public class Board {
         private User writeUser;
 
         @ColumnDefault("false")
-        private boolean isSignedUser;
         @Length(min = 1, max = 50)
         private String unsignedUser;
         @Length(min = 1, max = 50)
         private String unsignedPassword;
 
-        //commentList
+        //TODO : commentList
 
         public static Board createUnsigned(String dtype, String title,
                                            String content, String user, String password){
@@ -53,10 +52,12 @@ public class Board {
                 board.content = content;
                 board.recommend = 0;
                 board.writeDate = LocalDateTime.now();
-                board.isSignedUser = false;
                 board.unsignedUser = user;
                 board.unsignedPassword = password;
                 return board;
+        }
+        public boolean isSamePassword(String password){
+                return this.unsignedPassword.equals(password);
         }
 
         public void addRecommend(int addNumber){

@@ -3,10 +3,15 @@ package cupraccoon.myboard.service;
 import cupraccoon.myboard.domain.board.Board;
 import cupraccoon.myboard.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -19,30 +24,39 @@ public class BoardService {
     }
 
     public Board findOne(Long boardId) {
-        return boardRepository.findOne(boardId);
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
+        if(optionalBoard.isPresent()){
+            return optionalBoard.get();
+        }
+        else{
+            throw new IllegalArgumentException();
+        }
     }
 
-    public List<Board> findAllPosts() {
-        return boardRepository.findAll();
+    public Page<Board> findAllPosts(Pageable pageable) {
+        return boardRepository.findAll(pageable);
     }
-    public List<Board> findPostsByCategory(String dtype){
-        return boardRepository.findByCategory(dtype);
+
+
+    public Page<Board> findPostsByCategory(String dtype,Pageable pageable){
+        return boardRepository.findByDtype(dtype,pageable);
     }
-    public List<Board> findPostsByRecommend(int recommend){
-        return boardRepository.findByRecommend(recommend);
+    public Page<Board> findPostsByRecommend(int recommend, Pageable pageable){
+        return boardRepository.findByRecommendGreaterThanEqual(recommend,pageable);
     }
-    public boolean validatePassword(Long id,String inputPassword){
-        String password = boardRepository.getPassword(id);
-        return password.equals(inputPassword);
+    public boolean validatePassword(Long boardId,String inputPassword){
+        Board board = this.findOne(boardId);
+        return board.isSamePassword(inputPassword);
     }
     @Transactional
     public void deleteById(Long boardId){
-        Board board = boardRepository.findOne(boardId);
+        Board board = this.findOne(boardId);
         boardRepository.delete(board);
     }
     @Transactional
     public void increaseRecommend(Long id){
-        Board board = boardRepository.findOne(id);
-        boardRepository.increaseRecommend(board);
+        Board board = this.findOne(id);
+        board.addRecommend(1);
     }
+
 }
