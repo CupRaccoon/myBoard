@@ -5,6 +5,7 @@
 <body>
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"></div>
+    <div th:replace="fragments/loginHeader :: loginHeader (${loginMember})"/>
     <div th:replace="~{fragments/bodyHeader :: boardHeader (${boardType},${korName})}"></div>
 
 
@@ -25,7 +26,7 @@
             <label th:for="content">내용</label>
             <textarea type="text" th:field="*{content}" class="form-control" rows="5" placeholder="내용"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">쓰기</button>
     </form>
     <br/>
     <div th:replace="fragments/footer :: footer"></div>

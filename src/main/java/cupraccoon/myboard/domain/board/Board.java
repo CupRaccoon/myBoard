@@ -1,7 +1,7 @@
 package cupraccoon.myboard.domain.board;
 
 import com.sun.istack.NotNull;
-import cupraccoon.myboard.domain.User;
+import cupraccoon.myboard.domain.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,59 +10,74 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 public class Board {
 
-        @Id
-        @GeneratedValue
-        @Column(name = "board_id")
-        private Long id;
+    @Id
+    @GeneratedValue
+    @Column(name = "board_id")
+    private Long id;
 
-        private String dtype;
-        @NotNull
-        @Length(min = 1, max = 50)
-        private String title;
-        @Length(min = 1, max = 5000)
-        private String content;
-        private int recommend;
 
-        private LocalDateTime writeDate;
+    @NotBlank
+    private String dtype;
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id")
-        private User writeUser;
+    @NotNull
+    @Length(min = 1, max = 50)
+    private String title;
 
-        @ColumnDefault("false")
-        @Length(min = 1, max = 50)
-        private String unsignedUser;
-        @Length(min = 1, max = 50)
-        private String unsignedPassword;
+    @Length(min = 1, max = 5000)
+    @NotNull
+    private String content;
 
-        //TODO : commentList
+    @NotNull
+    private int recommend;
 
-        public static Board createUnsigned(String dtype, String title,
-                                           String content, String user, String password){
-                Board board = new Board();
-                board.dtype = dtype;
-                board.title = title;
-                board.content = content;
-                board.recommend = 0;
-                board.writeDate = LocalDateTime.now();
-                board.unsignedUser = user;
-                board.unsignedPassword = password;
-                return board;
-        }
-        public boolean isSamePassword(String password){
-                return this.unsignedPassword.equals(password);
-        }
+    @NotBlank
+    private LocalDateTime writeDate;
 
-        public void addRecommend(int addNumber){
-                this.recommend = recommend + addNumber;
-        }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    @NotNull
+    private Member writeUser;
+
+    @ColumnDefault("false")
+    @Length(min = 1, max = 50)
+    @NotNull
+    private String unsignedUser;
+    @Length(min = 1, max = 50)
+    @NotBlank
+    private String unsignedPassword;
+
+    //TODO : commentList
+
+    public static Board createUnsigned(String dtype, String title,
+                                       String content, String user, String password) {
+        Board board = new Board();
+        board.dtype = dtype;
+        board.title = title;
+        board.content = content;
+        board.recommend = 0;
+        board.writeDate = LocalDateTime.now();
+        board.unsignedUser = user;
+        board.unsignedPassword = password;
+        return board;
+    }
+
+    public boolean isSamePassword(String password) {
+        return this.unsignedPassword.equals(password);
+    }
+
+    public void addRecommend(int addNumber) {
+        this.recommend = recommend + addNumber;
+    }
 }
 
 

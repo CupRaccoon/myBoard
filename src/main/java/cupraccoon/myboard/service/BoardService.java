@@ -14,10 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+
     @Transactional
     public void saveBoard(Board board){
         boardRepository.save(board);

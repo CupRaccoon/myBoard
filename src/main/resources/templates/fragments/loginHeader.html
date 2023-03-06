@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="header" th:fragment="loginHeader (loginMember)">
+    <div th:if="${loginMember == null}">
+        <a href="/member/new"><h5 class="text-muted">회원가입</h5></a>
+        <a href="/member/login"><h5 class="text-muted">로그인</h5></a>
+    </div>
+
+
+    <div th:if="${loginMember != null}">
+        <h5 th:text="${loginMember.nickname}"></h5>
+        <form th:action="@{/member/logout}" method="post">
+            <button class="btn btn-primary" type="submit">로그아웃</button>
+        </form>
+    </div>
+</div>
+
+
+

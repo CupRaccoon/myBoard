@@ -5,7 +5,8 @@
 
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"></div>
-    <div th:replace="~{fragments/bodyHeader :: boardHeader (${boardType},${korName})}"></div>
+    <div th:replace="fragments/loginHeader :: loginHeader (${loginMember})"/>
+    <div th:replace="~{fragments/boardHeader :: boardHeader (${boardType},${korName})}"></div>
     <div>
         <h4 th:text="${board.title}"></h4>
             <table class="table table-striped">

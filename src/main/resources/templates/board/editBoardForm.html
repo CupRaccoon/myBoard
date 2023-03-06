@@ -5,7 +5,9 @@
 
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"></div>
+    <div th:replace="fragments/loginHeader :: loginHeader (${loginMember})"/>
     <div th:replace="~{fragments/bodyHeader :: boardHeader (${boardType},${korName})}"></div>
+
     <form th:action="@{/board/{path}/{id}/edit(path=${boardType},id=${boardId})}"
           th:object="${boardDto}" method="post">
         <div class="form-group">

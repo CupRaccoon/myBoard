@@ -1,10 +1,7 @@
-package cupraccoon.myboard.controller;
+package cupraccoon.myboard.controller.board;
 
 
-import com.sun.istack.NotNull;
 import lombok.*;
-
-import javax.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor

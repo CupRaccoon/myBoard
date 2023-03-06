@@ -1,8 +1,12 @@
-package cupraccoon.myboard.controller;
+package cupraccoon.myboard.controller.board;
 
+import cupraccoon.myboard.controller.PasswordForm;
+import cupraccoon.myboard.domain.Member;
 import cupraccoon.myboard.domain.board.Board;
 import cupraccoon.myboard.domain.board.Category;
 import cupraccoon.myboard.service.BoardService;
+import cupraccoon.myboard.web.SessionConst;
+import cupraccoon.myboard.web.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -12,8 +16,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -29,110 +31,150 @@ public class BoardController {
 //    }
 
     @GetMapping("/all")
-    public String list(Model model,
-                       @PageableDefault(page = 0,size = 10,sort = "id",direction = Sort.Direction.DESC)
+    public String list(@Login Member loginMember, Model model,
+                       @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC)
                                Pageable pageable) {
         Page<Board> boards = boardService.findAllPosts(pageable);
-        model.addAttribute("boardType","all");
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+        model.addAttribute("boardType", "all");
         model.addAttribute("boards", boards);
-        model.addAttribute("korName","종합게시판");
+        model.addAttribute("korName", "종합게시판");
+
         return "/board/list";
     }
+
     @GetMapping("/best")
-    public String bestList(Model model,
-                           @PageableDefault(page = 0,size = 10,sort = "id",direction = Sort.Direction.DESC)
+    public String bestList(@Login Member loginMember, Model model,
+                           @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC)
                                    Pageable pageable) {
         int recommend = 5;
-        Page<Board> boards = boardService.findPostsByRecommend(5,pageable);
-        model.addAttribute("boardType","best");
+        Page<Board> boards = boardService.findPostsByRecommend(5, pageable);
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+        model.addAttribute("boardType", "best");
         model.addAttribute("boards", boards);
-        model.addAttribute("korName","베스트게시판");
+        model.addAttribute("korName", "베스트게시판");
+
         return "/board/list";
     }
 
 
     @GetMapping("/{boardType}")
-    public String list(@PathVariable String boardType, Model model,
-                       @PageableDefault(page = 0,size = 10,sort = "id",direction = Sort.Direction.DESC)
+    public String list(@Login Member loginMember, @PathVariable String boardType, Model model,
+                       @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC)
                                Pageable pageable) {
         String category = Category.findCategoryByUrl(boardType);
-        Page<Board> boards = boardService.findPostsByCategory(category,pageable);
+        Page<Board> boards = boardService.findPostsByCategory(category, pageable);
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
         model.addAttribute("boards", boards);
         model.addAttribute("boardType", boardType);
         String korName = Category.findKorNameByUrl(boardType);
         model.addAttribute("korName", korName);
 
-
         return "/board/list";
     }
 
     @GetMapping("/{boardType}/new")
-    public String newBoard(@PathVariable String boardType, Model model) {
+    public String newBoard(@Login Member loginMember, @PathVariable String boardType, Model model) {
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
         model.addAttribute("boardType", boardType);
         model.addAttribute("boardDto", new BoardDto());
         String korName = Category.findKorNameByUrl(boardType);
         model.addAttribute("korName", korName);
+
         return "/board/writeBoardForm";
     }
 
     @PostMapping("/{boardType}/new")
-    public String newBoard(@PathVariable String boardType, BoardDto boardDto, Model model) throws Exception {
+    public String newBoard(@Login Member loginMember, @PathVariable String boardType,
+                           BoardDto boardDto, Model model) throws Exception {
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
         model.addAttribute("boardType", boardType);
         String dtype = Category.findCategoryByUrl(boardType);
         Board board = Board.createUnsigned(dtype, boardDto.getTitle(),
                 boardDto.getContent(), boardDto.getUserName(), boardDto.getPassword());
         boardService.saveBoard(board);
         Long savedId = board.getId();
+
         return "redirect:/board/" + boardType + "/" + savedId;
     }
 
     @GetMapping("/{boardType}/{boardId}")
-    public String boardCotent(@PathVariable String boardType, @PathVariable Long boardId, Model model) {
+    public String boardContent(@Login Member loginMember,
+                               @PathVariable String boardType, @PathVariable Long boardId, Model model) {
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
         Board findBoard = boardService.findOne(boardId);
         String korName = Category.findKorNameByUrl(boardType);
         model.addAttribute("board", findBoard);
         model.addAttribute("korName", korName);
+
         return "/board/content";
     }
 
     @GetMapping("/{boardType}/{boardId}/edit")
-    public String passwordFormToUpdate(@PathVariable String boardType,
-                                  @PathVariable Long boardId, Model model){
+    public String passwordFormToUpdate(@Login Member loginMember, @PathVariable String boardType,
+                                       @PathVariable Long boardId, Model model) {
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
         String korName = Category.findKorNameByUrl(boardType);
-        model.addAttribute("validateType","edit");
+        model.addAttribute("validateType", "edit");
         model.addAttribute("korName", korName);
-        model.addAttribute("boardId",boardId);
-        model.addAttribute("passwordForm",new PasswordForm());
+        model.addAttribute("boardId", boardId);
+        model.addAttribute("passwordForm", new PasswordForm());
+
         return "/board/passwordForm";
 
     }
+
     @PostMapping("/{boardType}/{boardId}/edit/validate")
-    public String updateBoardForm(@PathVariable String boardType, @PathVariable Long boardId,
-                                  @ModelAttribute("password") PasswordForm passwordForm, Model model){
-        String password =  passwordForm.getPassword();
+    public String updateBoardForm(@Login Member loginMember,
+                                  @PathVariable String boardType, @PathVariable Long boardId,
+                                  @ModelAttribute("password") PasswordForm passwordForm, Model model) {
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
+        String password = passwordForm.getPassword();
         Board board = boardService.findOne(boardId);
-        if(boardService.validatePassword(boardId,password)){
+
+        if (boardService.validatePassword(boardId, password)) {
             String korName = Category.findKorNameByUrl(boardType);
             BoardDto boardDto = new BoardDto();
             boardDto.setUserName(board.getUnsignedUser());
             boardDto.setPassword(board.getUnsignedPassword());
             boardDto.setTitle(board.getTitle());
             boardDto.setContent(board.getContent());
-            model.addAttribute("boardDto",boardDto);
+            model.addAttribute("boardDto", boardDto);
             model.addAttribute("korName", korName);
-            model.addAttribute("boardId",boardId);
+            model.addAttribute("boardId", boardId);
             return "/board/editBoardForm";
-        }
-        else{
+        } else {
             log.error("wrong password");
             log.error("password : " + password);
-            model.addAttribute("errorMessage",password);
+            model.addAttribute("errorMessage", password);
             return "/board/error";
         }
+
+
+
     }
+
     @PostMapping("/{boardType}/{boardId}/edit")
-    public String updateBoardForm(@PathVariable String boardType, @PathVariable Long boardId,
-                                  @ModelAttribute("boardDto") BoardDto boardDto, Model model){
+    public String updateBoardForm(@Login Member loginMember,
+                                  @PathVariable String boardType, @PathVariable Long boardId,
+                                  @ModelAttribute("boardDto") BoardDto boardDto, Model model) {
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
         Board board = boardService.findOne(boardId);
         String korName = Category.findKorNameByUrl(boardType);
         board.setUnsignedUser(boardDto.getUserName());
@@ -141,41 +183,55 @@ public class BoardController {
         board.setContent(boardDto.getTitle());
         boardService.saveBoard(board);
         model.addAttribute("korName", korName);
-        model.addAttribute("boardId",boardId);
+        model.addAttribute("boardId", boardId);
+
         return "redirect:/board/" + boardType + "/" + boardId;
 
     }
 
     @GetMapping("/{boardType}/{boardId}/delete")
-    public String passwordFormToDelete(@PathVariable String boardType,
-                                       @PathVariable Long boardId, Model model){
+    public String passwordFormToDelete(@Login Member loginMember,
+                                       @PathVariable String boardType, @PathVariable Long boardId,
+                                       Model model) {
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
         String korName = Category.findKorNameByUrl(boardType);
-        model.addAttribute("validateType","delete");
+        model.addAttribute("validateType", "delete");
         model.addAttribute("korName", korName);
-        model.addAttribute("boardId",boardId);
-        model.addAttribute("passwordForm",new PasswordForm());
+        model.addAttribute("boardId", boardId);
+        model.addAttribute("passwordForm", new PasswordForm());
+
         return "/board/passwordForm";
     }
+
     @PostMapping("/{boardType}/{boardId}/delete/validate")
-    public String deleteBoard(@PathVariable String boardType, @PathVariable Long boardId,
-                                  @ModelAttribute("password") PasswordForm passwordForm, Model model){
-        String password =  passwordForm.getPassword();
-        if(boardService.validatePassword(boardId,password)){
+    public String deleteBoard(@Login Member loginMember,
+                              @PathVariable String boardType, @PathVariable Long boardId,
+                              @ModelAttribute("password") PasswordForm passwordForm, Model model) {
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
+        String password = passwordForm.getPassword();
+
+        if (boardService.validatePassword(boardId, password)) {
             boardService.deleteById(boardId);
             String korName = Category.findKorNameByUrl(boardType);
             return "redirect:/board/" + boardType;
-        }
-        else{
+        } else {
             log.error("wrong password");
-            log.error("input_password : "+password);
-            model.addAttribute("errorMessage",password);
+            log.error("input_password : " + password);
+            model.addAttribute("errorMessage", password);
             return "/board/error";
         }
     }
+
     @GetMapping("{boardType}/{boardId}/recommend")
-    public String increaseBoardRecommend(@PathVariable String boardType, @PathVariable Long boardId,
-                                         Model model){
+    public String increaseBoardRecommend(@Login Member loginMember,
+                                         @PathVariable String boardType, @PathVariable Long boardId,
+                                         Model model) {
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
         boardService.increaseRecommend(boardId);
+
         return "redirect:/board/" + boardType + "/" + boardId;
     }
 }

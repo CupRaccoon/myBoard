@@ -18,7 +18,7 @@ public class Comment {
     @Column(name = "comment_id")
     private Long id;
 
-    private String cotent;
+    private String content;
     private LocalDateTime writeTime;
     private int recommend;
 
