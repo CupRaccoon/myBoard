@@ -1,6 +1,5 @@
 package cupraccoon.myboard.controller.board;
 
-import cupraccoon.myboard.controller.PasswordForm;
 import cupraccoon.myboard.domain.Member;
 import cupraccoon.myboard.domain.board.Board;
 import cupraccoon.myboard.domain.board.Category;
@@ -83,7 +82,7 @@ public class BoardController {
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
 
         model.addAttribute("boardType", boardType);
-        model.addAttribute("boardDto", new BoardDto());
+        model.addAttribute("boardRequest", new BoardRequest());
         String korName = Category.findKorNameByUrl(boardType);
         model.addAttribute("korName", korName);
 
@@ -92,14 +91,14 @@ public class BoardController {
 
     @PostMapping("/{boardType}/new")
     public String newBoard(@Login Member loginMember, @PathVariable String boardType,
-                           BoardDto boardDto, Model model) throws Exception {
+                           BoardRequest boardRequest, Model model) throws Exception {
 
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
 
         model.addAttribute("boardType", boardType);
         String dtype = Category.findCategoryByUrl(boardType);
-        Board board = Board.createUnsigned(dtype, boardDto.getTitle(),
-                boardDto.getContent(), boardDto.getUserName(), boardDto.getPassword());
+        Board board = Board.createUnsigned(dtype, boardRequest.getTitle(),
+                boardRequest.getContent(), boardRequest.getUserName(), boardRequest.getPassword());
         boardService.saveBoard(board);
         Long savedId = board.getId();
 
@@ -130,7 +129,7 @@ public class BoardController {
         model.addAttribute("validateType", "edit");
         model.addAttribute("korName", korName);
         model.addAttribute("boardId", boardId);
-        model.addAttribute("passwordForm", new PasswordForm());
+        model.addAttribute("passwordForm", new BoardPassword());
 
         return "/board/passwordForm";
 
@@ -139,21 +138,21 @@ public class BoardController {
     @PostMapping("/{boardType}/{boardId}/edit/validate")
     public String updateBoardForm(@Login Member loginMember,
                                   @PathVariable String boardType, @PathVariable Long boardId,
-                                  @ModelAttribute("password") PasswordForm passwordForm, Model model) {
+                                  @ModelAttribute("password") BoardPassword boardPassword, Model model) {
 
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
 
-        String password = passwordForm.getPassword();
+        String password = boardPassword.getPassword();
         Board board = boardService.findOne(boardId);
 
         if (boardService.validatePassword(boardId, password)) {
             String korName = Category.findKorNameByUrl(boardType);
-            BoardDto boardDto = new BoardDto();
-            boardDto.setUserName(board.getUnsignedUser());
-            boardDto.setPassword(board.getUnsignedPassword());
-            boardDto.setTitle(board.getTitle());
-            boardDto.setContent(board.getContent());
-            model.addAttribute("boardDto", boardDto);
+            BoardRequest boardRequestDto = new BoardRequest();
+            boardRequestDto.setUserName(board.getUnsignedUser());
+            boardRequestDto.setPassword(board.getUnsignedPassword());
+            boardRequestDto.setTitle(board.getTitle());
+            boardRequestDto.setContent(board.getContent());
+            model.addAttribute("boardRequestDto", boardRequestDto);
             model.addAttribute("korName", korName);
             model.addAttribute("boardId", boardId);
             return "/board/editBoardForm";
@@ -171,16 +170,16 @@ public class BoardController {
     @PostMapping("/{boardType}/{boardId}/edit")
     public String updateBoardForm(@Login Member loginMember,
                                   @PathVariable String boardType, @PathVariable Long boardId,
-                                  @ModelAttribute("boardDto") BoardDto boardDto, Model model) {
+                                  @ModelAttribute("boardDto") BoardRequest boardRequest, Model model) {
 
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
 
         Board board = boardService.findOne(boardId);
         String korName = Category.findKorNameByUrl(boardType);
-        board.setUnsignedUser(boardDto.getUserName());
-        board.setUnsignedPassword(boardDto.getPassword());
-        board.setTitle(boardDto.getTitle());
-        board.setContent(boardDto.getTitle());
+        board.setUnsignedUser(boardRequest.getUserName());
+        board.setUnsignedPassword(boardRequest.getPassword());
+        board.setTitle(boardRequest.getTitle());
+        board.setContent(boardRequest.getContent());
         boardService.saveBoard(board);
         model.addAttribute("korName", korName);
         model.addAttribute("boardId", boardId);
@@ -199,7 +198,7 @@ public class BoardController {
         model.addAttribute("validateType", "delete");
         model.addAttribute("korName", korName);
         model.addAttribute("boardId", boardId);
-        model.addAttribute("passwordForm", new PasswordForm());
+        model.addAttribute("passwordForm", new BoardPassword());
 
         return "/board/passwordForm";
     }
@@ -207,10 +206,10 @@ public class BoardController {
     @PostMapping("/{boardType}/{boardId}/delete/validate")
     public String deleteBoard(@Login Member loginMember,
                               @PathVariable String boardType, @PathVariable Long boardId,
-                              @ModelAttribute("password") PasswordForm passwordForm, Model model) {
+                              @ModelAttribute("password") BoardPassword boardPassword, Model model) {
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
 
-        String password = passwordForm.getPassword();
+        String password = boardPassword.getPassword();
 
         if (boardService.validatePassword(boardId, password)) {
             boardService.deleteById(boardId);

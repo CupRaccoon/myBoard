@@ -6,7 +6,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardDto {
+public class BoardRequest {
     private String userName;
     private String password;
     private String title;
