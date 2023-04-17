@@ -5,11 +5,6 @@
     <a href="/"><h1 class="text-muted">MyBoard</h1></a>
 </div>
 
-<div class="header" th:fragment="loginHeader">
-    <a href="/member/new"><h5 class="text-muted">회원가입</h5></a>
-    <a href="/member/login"><h5 class="text-muted">로그인</h5></a>
-</div>
-
 <div class="header" th:fragment="boardHeader (boardType,korName)">
     <a th:href="@{/board/{path}(path=${boardType})}"><h2 th:text="${korName}"></h2></a>
 </div>

@@ -2,9 +2,7 @@ package cupraccoon.myboard.domain.board;
 
 import com.sun.istack.NotNull;
 import cupraccoon.myboard.domain.Member;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class Board {
 
     @Id
@@ -29,46 +26,49 @@ public class Board {
     @NotBlank
     private String dtype;
 
-    @NotNull
-    @Length(min = 1, max = 50)
     private String title;
 
-    @Length(min = 1, max = 5000)
-    @NotNull
     private String content;
 
-    @NotNull
     private int recommend;
 
-    @NotBlank
     private LocalDateTime writeDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    @NotNull
-    private Member writeUser;
+    private Member writeMember;
 
-    @ColumnDefault("false")
-    @Length(min = 1, max = 50)
-    @NotNull
-    private String unsignedUser;
-    @Length(min = 1, max = 50)
-    @NotBlank
+    private String unsignedMember;
+
     private String unsignedPassword;
 
     //TODO : commentList
 
-    public static Board createUnsigned(String dtype, String title,
-                                       String content, String user, String password) {
-        Board board = new Board();
-        board.dtype = dtype;
-        board.title = title;
-        board.content = content;
-        board.recommend = 0;
-        board.writeDate = LocalDateTime.now();
-        board.unsignedUser = user;
-        board.unsignedPassword = password;
-        return board;
+    @Builder
+    private Board(String dtype, String title, String content,
+                  int recommend, Member writeMember,
+                  String unsignedMember, String unsignedPassword) {
+        this.dtype = dtype;
+        this.title = title;
+        this.content = content;
+        this.recommend = recommend;
+        this.writeDate = LocalDateTime.now();
+        this.writeMember = writeMember;
+        this.unsignedMember = unsignedMember;
+        this.unsignedPassword = unsignedPassword;
+    }
+
+    public void editBoardSigned(String title, String content){
+        this.title = title;
+        this.content = content;
+        this.writeDate = LocalDateTime.now();
+    }
+    public void editBoardUnsigned(String title, String content, String unsignedMember, String unsignedPassword){
+        this.title = title;
+        this.content = content;
+        this.writeDate = LocalDateTime.now();
+        this.unsignedMember = unsignedMember;
+        this.unsignedPassword = unsignedPassword;
     }
 
     public boolean isSamePassword(String password) {

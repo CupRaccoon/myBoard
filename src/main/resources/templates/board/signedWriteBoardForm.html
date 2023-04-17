@@ -9,15 +9,7 @@
     <div th:replace="~{fragments/bodyHeader :: boardHeader (${boardType},${korName})}"></div>
 
 
-    <form th:action="@{/board/{path}/new(path=${boardType})}" th:object="${newBoardRequest}" method="post">
-        <div class="form-group">
-            <label th:for="userName">닉네임</label>
-            <input type="text" th:field="*{userName}" class="form-control">
-        </div>
-        <div class="form-group">
-            <label th:for="password">비밀번호</label>
-            <input type="text" th:field="*{password}" class="form-control">
-        </div>
+    <form th:action="@{/board/{path}/signednew(path=${boardType})}" th:object="${newBoardRequest}" method="post">
         <div class="form-group">
             <label th:for="title">제목</label>
             <input type="text" th:field="*{title}" class="form-control">

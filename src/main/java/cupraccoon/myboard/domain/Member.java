@@ -1,6 +1,7 @@
 package cupraccoon.myboard.domain;
 
 import cupraccoon.myboard.domain.board.Board;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
+@EqualsAndHashCode
 public class Member {
     @Id
     @GeneratedValue

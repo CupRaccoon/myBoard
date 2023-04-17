@@ -24,7 +24,12 @@
             <td th:text="${board.id}"></td>
             <td><a th:href="@{/board/{path}/{id}(path=${boardType},id=${board.id})}"
                    th:text="${board.title}"></a></td>
-            <td th:text="${board.unsignedUser}"></td>
+            <td th:if="${board.writeMember == null}">
+                <span th:text="${board.unsignedMember}"></span>
+            </td>
+            <td th:if="${board.writeMember != null}">
+                <span th:text="${board.writeMember.nickname}"></span>
+            </td>
             <td th:text="${#temporals.format(board.writeDate,'yyyy-MM-dd HH:mm')}"></td>
             <td th:text="${board.recommend}"></td>
         </tr>

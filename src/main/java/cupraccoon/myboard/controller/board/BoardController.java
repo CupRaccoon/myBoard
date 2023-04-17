@@ -71,8 +71,8 @@ public class BoardController {
         model.addAttribute("boards", boards);
         model.addAttribute("boardType", boardType);
         String korName = Category.findKorNameByUrl(boardType);
-        model.addAttribute("korName", korName);
 
+        model.addAttribute("korName", korName);
         return "/board/list";
     }
 
@@ -80,31 +80,54 @@ public class BoardController {
     public String newBoard(@Login Member loginMember, @PathVariable String boardType, Model model) {
 
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
-
         model.addAttribute("boardType", boardType);
-        model.addAttribute("boardRequest", new BoardRequest());
         String korName = Category.findKorNameByUrl(boardType);
         model.addAttribute("korName", korName);
-
-        return "/board/writeBoardForm";
+        if(loginMember == null){
+            model.addAttribute("newBoardRequest", new UnsignedNewBoardRequest());
+            return "/board/writeBoardForm";
+        }
+        else{
+            model.addAttribute("newBoardRequest",new SignedNewBoardRequest());
+            return "/board/signedWriteBoardForm";
+        }
     }
 
     @PostMapping("/{boardType}/new")
     public String newBoard(@Login Member loginMember, @PathVariable String boardType,
-                           BoardRequest boardRequest, Model model) throws Exception {
+                           UnsignedNewBoardRequest newBoardRequest, Model model) throws Exception {
 
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
 
         model.addAttribute("boardType", boardType);
         String dtype = Category.findCategoryByUrl(boardType);
-        Board board = Board.createUnsigned(dtype, boardRequest.getTitle(),
-                boardRequest.getContent(), boardRequest.getUserName(), boardRequest.getPassword());
+
+        Board board = Board.builder().dtype(dtype).title(newBoardRequest.getTitle()).
+                content(newBoardRequest.getContent()).recommend(0).
+                unsignedMember(newBoardRequest.getUserName()).unsignedPassword(newBoardRequest.getPassword()).build();
+
         boardService.saveBoard(board);
         Long savedId = board.getId();
 
         return "redirect:/board/" + boardType + "/" + savedId;
     }
+    @PostMapping("/{boardType}/signednew")
+    public String signedNewBoard(@Login Member loginMember, @PathVariable String boardType,
+                           SignedNewBoardRequest newBoardRequest, Model model) throws Exception {
 
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+
+        model.addAttribute("boardType", boardType);
+        String dtype = Category.findCategoryByUrl(boardType);
+
+        Board board = Board.builder().dtype(dtype).title(newBoardRequest.getTitle()).
+                content(newBoardRequest.getContent()).recommend(0).writeMember(loginMember).build();
+
+        boardService.saveBoard(board);
+        Long savedId = board.getId();
+
+        return "redirect:/board/" + boardType + "/" + savedId;
+    }
     @GetMapping("/{boardType}/{boardId}")
     public String boardContent(@Login Member loginMember,
                                @PathVariable String boardType, @PathVariable Long boardId, Model model) {
@@ -125,13 +148,38 @@ public class BoardController {
 
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
 
+        Board findBoard = boardService.findOne(boardId);
         String korName = Category.findKorNameByUrl(boardType);
-        model.addAttribute("validateType", "edit");
-        model.addAttribute("korName", korName);
-        model.addAttribute("boardId", boardId);
-        model.addAttribute("passwordForm", new BoardPassword());
 
-        return "/board/passwordForm";
+        if(findBoard.getWriteMember() == null){
+            model.addAttribute("validateType", "edit");
+            model.addAttribute("korName", korName);
+            model.addAttribute("boardId", boardId);
+            model.addAttribute("passwordForm", new BoardPassword());
+
+            return "/board/passwordForm";
+        }
+        else{
+            if(findBoard.getWriteMember().equals(loginMember)) {
+                editBoardRequest boardRequest = new editBoardRequest();
+                boardRequest.setSigned(true);
+                boardRequest.setTitle(findBoard.getTitle());
+                boardRequest.setContent(findBoard.getContent());
+                model.addAttribute("boardRequest", boardRequest);
+                model.addAttribute("korName", korName);
+                model.addAttribute("boardId", boardId);
+                return "/board/editBoardForm";
+            }
+            else{
+                log.error("edit:wrong member");
+                log.error("board member :"+findBoard.getWriteMember().getId());
+                model.addAttribute("errorMessage","edit:wrong member");
+                return "/board/error";
+
+            }
+
+        }
+
 
     }
 
@@ -147,19 +195,20 @@ public class BoardController {
 
         if (boardService.validatePassword(boardId, password)) {
             String korName = Category.findKorNameByUrl(boardType);
-            BoardRequest boardRequestDto = new BoardRequest();
-            boardRequestDto.setUserName(board.getUnsignedUser());
-            boardRequestDto.setPassword(board.getUnsignedPassword());
-            boardRequestDto.setTitle(board.getTitle());
-            boardRequestDto.setContent(board.getContent());
-            model.addAttribute("boardRequestDto", boardRequestDto);
+            editBoardRequest boardRequest = new editBoardRequest();
+            boardRequest.setSigned(false);
+            boardRequest.setUserName(board.getUnsignedMember());
+            boardRequest.setPassword(board.getUnsignedPassword());
+            boardRequest.setTitle(board.getTitle());
+            boardRequest.setContent(board.getContent());
+            model.addAttribute("boardRequest", boardRequest);
             model.addAttribute("korName", korName);
             model.addAttribute("boardId", boardId);
             return "/board/editBoardForm";
         } else {
             log.error("wrong password");
             log.error("password : " + password);
-            model.addAttribute("errorMessage", password);
+            model.addAttribute("errorMessage", "edit:wrong password");
             return "/board/error";
         }
 
@@ -170,17 +219,23 @@ public class BoardController {
     @PostMapping("/{boardType}/{boardId}/edit")
     public String updateBoardForm(@Login Member loginMember,
                                   @PathVariable String boardType, @PathVariable Long boardId,
-                                  @ModelAttribute("boardDto") BoardRequest boardRequest, Model model) {
+                                  @ModelAttribute editBoardRequest boardRequest, Model model) {
 
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
 
         Board board = boardService.findOne(boardId);
         String korName = Category.findKorNameByUrl(boardType);
-        board.setUnsignedUser(boardRequest.getUserName());
-        board.setUnsignedPassword(boardRequest.getPassword());
-        board.setTitle(boardRequest.getTitle());
-        board.setContent(boardRequest.getContent());
-        boardService.saveBoard(board);
+        if(boardRequest.isSigned()) {
+            board.editBoardSigned(boardRequest.getTitle(),boardRequest.getContent());
+            boardService.saveBoard(board);
+        }
+        else{
+            board.editBoardUnsigned(boardRequest.getTitle(), boardRequest.getContent(),
+                    boardRequest.getUserName(), boardRequest.getPassword());
+            boardService.saveBoard(board);
+        }
+
+
         model.addAttribute("korName", korName);
         model.addAttribute("boardId", boardId);
 
@@ -193,14 +248,30 @@ public class BoardController {
                                        @PathVariable String boardType, @PathVariable Long boardId,
                                        Model model) {
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
-
+        Board board = boardService.findOne(boardId);
         String korName = Category.findKorNameByUrl(boardType);
-        model.addAttribute("validateType", "delete");
-        model.addAttribute("korName", korName);
-        model.addAttribute("boardId", boardId);
-        model.addAttribute("passwordForm", new BoardPassword());
+        if(board.getWriteMember() == null) {
+            model.addAttribute("validateType", "delete");
+            model.addAttribute("korName", korName);
+            model.addAttribute("boardId", boardId);
+            model.addAttribute("passwordForm", new BoardPassword());
+            return "/board/passwordForm";
+        }
+        else{
+            if(board.getWriteMember().equals(loginMember)) {
+                boardService.deleteById(boardId);
+                model.addAttribute("korName", korName);
+                return "redirect:/board/" + boardType;
+            }
+            else{
+                log.error("delete: wrong member");
+                log.error("board member :"+board.getWriteMember().getId());
+                model.addAttribute("errorMessage","delete:wrong member");
+                return "/board/error";
 
-        return "/board/passwordForm";
+            }
+
+        }
     }
 
     @PostMapping("/{boardType}/{boardId}/delete/validate")
