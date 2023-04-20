@@ -1,13 +1,11 @@
 package cupraccoon.myboard.domain;
 
 
+import cupraccoon.myboard.domain.board.Board;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,5 +19,9 @@ public class Comment {
     private String content;
     private LocalDateTime writeTime;
     private int recommend;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
 
 }

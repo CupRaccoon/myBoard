@@ -1,6 +1,7 @@
 package cupraccoon.myboard.domain.board;
 
 import com.sun.istack.NotNull;
+import cupraccoon.myboard.domain.Comment;
 import cupraccoon.myboard.domain.Member;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -11,6 +12,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,7 +45,8 @@ public class Board {
 
     private String unsignedPassword;
 
-    //TODO : commentList
+    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     private Board(String dtype, String title, String content,
