@@ -1,5 +1,6 @@
 package cupraccoon.myboard.controller.board;
 
+import cupraccoon.myboard.controller.comment.NewCommentRequest;
 import cupraccoon.myboard.domain.Member;
 import cupraccoon.myboard.domain.board.Board;
 import cupraccoon.myboard.domain.board.Category;
@@ -15,6 +16,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.rmi.activation.ActivationGroupDesc;
 
 @Slf4j
 @Controller
@@ -67,7 +70,6 @@ public class BoardController {
         Page<Board> boards = boardService.findPostsByCategory(category, pageable);
 
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
-
         model.addAttribute("boards", boards);
         model.addAttribute("boardType", boardType);
         String korName = Category.findKorNameByUrl(boardType);
@@ -137,6 +139,7 @@ public class BoardController {
         Board findBoard = boardService.findOne(boardId);
         String korName = Category.findKorNameByUrl(boardType);
         model.addAttribute("board", findBoard);
+        model.addAttribute("newCommentRequest",new NewCommentRequest());
         model.addAttribute("korName", korName);
 
         return "/board/content";

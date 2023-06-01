@@ -40,9 +40,7 @@ public class Board {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member writeMember;
-
     private String unsignedMember;
-
     private String unsignedPassword;
 
     @OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
