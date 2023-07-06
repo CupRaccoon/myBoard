@@ -7,6 +7,7 @@ import cupraccoon.myboard.domain.Comment;
 import cupraccoon.myboard.domain.Member;
 import cupraccoon.myboard.domain.board.Board;
 import cupraccoon.myboard.domain.board.Category;
+import cupraccoon.myboard.repository.CommentRepository;
 import cupraccoon.myboard.service.BoardService;
 import cupraccoon.myboard.service.CommentService;
 import cupraccoon.myboard.web.SessionConst;
@@ -34,9 +35,13 @@ public class CommentController {
         model.addAttribute("boardType", boardType);
         String korName = Category.findKorNameByUrl(boardType);
         Board findBoard = boardService.findOne(boardId);
+        Comment parentComment = commentService.findOne(newCommentRequest.getParentId());
         Comment comment = Comment.builder().content(newCommentRequest.getContent()).
-        unsignedMember(newCommentRequest.getUserName()).board(findBoard).
-                unsignedPassword(newCommentRequest.getPassword()).recommend(0).writeMember(null).build();
+        unsignedMember(newCommentRequest.getUserName()).board(findBoard).parentComment(parentComment).
+                unsignedPassword(newCommentRequest.getPassword()).writeMember(null).build();
+        if(parentComment != null){
+            parentComment.getChildComment().add(comment);
+        }
         commentService.saveComment(comment);
         model.addAttribute("korName", korName);
         return "redirect:/board/" + boardType + "/" + boardId;

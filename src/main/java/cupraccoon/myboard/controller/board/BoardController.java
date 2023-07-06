@@ -1,10 +1,12 @@
 package cupraccoon.myboard.controller.board;
 
+import cupraccoon.myboard.controller.comment.CommentResponse;
 import cupraccoon.myboard.controller.comment.NewCommentRequest;
 import cupraccoon.myboard.domain.Member;
 import cupraccoon.myboard.domain.board.Board;
 import cupraccoon.myboard.domain.board.Category;
 import cupraccoon.myboard.service.BoardService;
+import cupraccoon.myboard.service.CommentService;
 import cupraccoon.myboard.web.SessionConst;
 import cupraccoon.myboard.web.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.rmi.activation.ActivationGroupDesc;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -25,6 +28,8 @@ import java.rmi.activation.ActivationGroupDesc;
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
+    private final CommentService commentService;
+
 
 
 //    @GetMapping("/test")
@@ -68,14 +73,28 @@ public class BoardController {
                                Pageable pageable) {
         String category = Category.findCategoryByUrl(boardType);
         Page<Board> boards = boardService.findPostsByCategory(category, pageable);
+        String korName = Category.findKorNameByUrl(boardType);
 
         model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
         model.addAttribute("boards", boards);
         model.addAttribute("boardType", boardType);
-        String korName = Category.findKorNameByUrl(boardType);
-
         model.addAttribute("korName", korName);
         return "/board/list";
+    }
+
+    @GetMapping("/{boardType}/{boardId}")
+    public String boardContent(@Login Member loginMember,
+                               @PathVariable String boardType, @PathVariable Long boardId, Model model) {
+
+        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+        String korName = Category.findKorNameByUrl(boardType);
+        Board board = boardService.findOne(boardId);
+        List<CommentResponse> commentResponses = commentService.findAllCommentsByBoard(board);
+        model.addAttribute("board", board);
+        model.addAttribute("newCommentRequest",new NewCommentRequest());
+        model.addAttribute("korName", korName);
+        model.addAttribute("commentResponses",commentResponses);
+        return "/board/content";
     }
 
     @GetMapping("/{boardType}/new")
@@ -130,20 +149,7 @@ public class BoardController {
 
         return "redirect:/board/" + boardType + "/" + savedId;
     }
-    @GetMapping("/{boardType}/{boardId}")
-    public String boardContent(@Login Member loginMember,
-                               @PathVariable String boardType, @PathVariable Long boardId, Model model) {
 
-        model.addAttribute(SessionConst.LOGIN_MEMBER,loginMember);
-
-        Board findBoard = boardService.findOne(boardId);
-        String korName = Category.findKorNameByUrl(boardType);
-        model.addAttribute("board", findBoard);
-        model.addAttribute("newCommentRequest",new NewCommentRequest());
-        model.addAttribute("korName", korName);
-
-        return "/board/content";
-    }
 
     @GetMapping("/{boardType}/{boardId}/edit")
     public String passwordFormToUpdate(@Login Member loginMember, @PathVariable String boardType,

@@ -43,9 +43,6 @@ public class Board {
     private String unsignedMember;
     private String unsignedPassword;
 
-    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
-
     @Builder
     private Board(String dtype, String title, String content,
                   int recommend, Member writeMember,

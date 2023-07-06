@@ -20,7 +20,7 @@ public class Comment {
 
     private String content;
     private LocalDateTime writeDate;
-    private int recommend;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
@@ -32,18 +32,18 @@ public class Comment {
     private String unsignedMember;
     private String unsignedPassword;
 //
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "parent_id")
-//    private Comment parent_comment;
-//
-//    @OneToMany(fetch = FetchType.LAZY)
-//    private List<Comment> child_comments = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parentComment;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Comment> childComment = new ArrayList<>();
 
     @Builder
-    private Comment(String content,int recommend,Board board,Member writeMember, String unsignedMember, String unsignedPassword) {
+    private Comment(String content,Comment parentComment,Board board,Member writeMember, String unsignedMember, String unsignedPassword) {
         this.content = content;
+        this.parentComment = parentComment;
         this.board = board;
-        this.recommend = recommend;
         this.writeDate = LocalDateTime.now();
         this.writeMember = writeMember;
         this.unsignedMember = unsignedMember;
